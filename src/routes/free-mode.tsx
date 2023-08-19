@@ -1,64 +1,44 @@
-import { Form } from "react-router-dom";
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
+import World from '../World'
 
-export default function FreeMode() {
-  const contact = {
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/g/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+const FreeMode = () => {
+  const screenRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    (async () => {
+      const world = new World()
+      const screen = screenRef.current
+      screen?.appendChild(world.renderer.domElement)
+
+      const geometry = new THREE.BoxGeometry(1, 1, 1)
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+      const cube = new THREE.Mesh(geometry, material)
+      world.scene.add(cube)
+
+      world.camera.position.z = 5
+
+      const animate = () => {
+        requestAnimationFrame(animate)
+
+        cube.rotation.x += 0.01
+        cube.rotation.y += 0.01
+
+        world.renderer.render(world.scene, world.camera)
+      }
+
+      animate()
+
+      return () => {
+        screen?.removeChild(world.renderer.domElement)
+      }
+    })()
+
+  }, [])
 
   return (
-    <div id="contact">
-
-
-      <div>
-        <h1>
-          {contact.first || contact.last ? (
-            <>
-              {contact.first} {contact.last}
-            </>
-          ) : (
-            <i>No Name</i>
-          )}{" "}
-        </h1>
-
-        {contact.twitter && (
-          <p>
-            <a
-              target="_blank"
-              href={`https://twitter.com/${contact.twitter}`}
-            >
-              {contact.twitter}
-            </a>
-          </p>
-        )}
-
-        {contact.notes && <p>{contact.notes}</p>}
-
-        <div>
-          <Form action="edit">
-            <button type="submit">Edit</button>
-          </Form>
-          <Form
-            method="post"
-            action="destroy"
-            onSubmit={(event) => {
-              if (
-                !confirm(
-                  "Please confirm you want to delete this record."
-                )
-              ) {
-                event.preventDefault();
-              }
-            }}
-          >
-            <button type="submit">Delete</button>
-          </Form>
-        </div>
-      </div>
-    </div>
-  );
+    <div ref={screenRef} />
+  )
 }
+
+export default FreeMode
