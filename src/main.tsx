@@ -7,12 +7,17 @@ import {
 import "./index.css";
 import Root from "./routes/root.tsx";
 import ErrorPage from "./error-page.tsx";
+import FreeMode from "./routes/free-mode.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "free-mode",
+    element: <FreeMode />,
   },
 ]);
 
