@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import World from '../World'
 
 const FreeMode = () => {
@@ -14,15 +16,26 @@ const FreeMode = () => {
       const geometry = new THREE.BoxGeometry(1, 1, 1)
       const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
       const cube = new THREE.Mesh(geometry, material)
-      world.scene.add(cube)
+      //world.scene.add(cube)
 
       world.camera.position.z = 5
+
+      const loader = new GLTFLoader();
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('draco/');
+      loader.setDRACOLoader(dracoLoader);
+
+      loader.load('room.glb', function (gltf) {
+        world.scene.add(gltf.scene);
+      }, undefined, function (error) {
+        console.error(error);
+      });
 
       const animate = () => {
         requestAnimationFrame(animate)
 
-        cube.rotation.x += 0.01
-        cube.rotation.y += 0.01
+        // cube.rotation.x += 0.01
+        // cube.rotation.y += 0.01
 
         world.renderer.render(world.scene, world.camera)
       }
