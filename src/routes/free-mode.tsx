@@ -25,8 +25,61 @@ const FreeMode = () => {
       dracoLoader.setDecoderPath('draco/');
       loader.setDRACOLoader(dracoLoader);
 
-      loader.load('room.glb', function (gltf) {
+      // loader.load('room.glb', function (gltf) {
+      //   world.scene.add(gltf.scene);
+      // }, undefined, function (error) {
+      //   console.error(error);
+      // });
+
+
+      loader.load('roomba.glb', function (gltf) {
+        gltf.scene.position.set(0, 0, 0);
         world.scene.add(gltf.scene);
+
+        const keys = {
+          forward: false,
+          backward: false,
+          left: false,
+          right: false,
+        };
+
+        const onKeyDown = (event: KeyboardEvent) => {
+          switch (event.key) {
+            case "w":
+              keys.forward = true;
+              break;
+            case "a":
+              keys.left = true;
+              break;
+            case "s":
+              keys.backward = true;
+              break;
+            case "d":
+              keys.right = true;
+              break;
+          }
+        }
+
+        const onKeyUp = (event: KeyboardEvent) => {
+          switch (event.key) {
+            case "w":
+              keys.forward = false;
+              break;
+            case "a":
+              keys.left = false;
+              break;
+            case "s":
+              keys.backward = false;
+              break;
+            case "d":
+              keys.right = false;
+              break;
+          }
+        }
+        document.addEventListener('keydown', (e) => onKeyDown(e), false);
+        document.addEventListener('keyup', (e) => onKeyUp(e), false);
+
+
       }, undefined, function (error) {
         console.error(error);
       });
