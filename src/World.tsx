@@ -15,7 +15,7 @@ class World {
 
     this.clock = new THREE.Clock();
 
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    //const controls = new OrbitControls(this.camera, this.renderer.domElement);
     const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.0);
     this.scene.add(ambientLight);
 

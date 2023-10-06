@@ -19,8 +19,9 @@ const FreeMode = () => {
       const map:Map = await Map.init();
       world.scene.add(map.model);
 
-      const cleaner:Cleaner = await Cleaner.init();
+      const cleaner:Cleaner = await Cleaner.init(world.camera);
       world.scene.add(cleaner.model);
+      world.scene.add(cleaner.camera.cameraBox);
 
       const animate = () => {
         requestAnimationFrame(animate);

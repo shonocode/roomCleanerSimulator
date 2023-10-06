@@ -14,6 +14,10 @@ class Cleaner {
         right: boolean,
     };
     model: THREE.Object3D;
+    camera: {
+        cameraBox: THREE.Object3D,
+        pointerPosition: { x: number, y: number }
+    };
 
     constructor() {
         this.position = new THREE.Vector3(0, 0, 0);
@@ -28,18 +32,23 @@ class Cleaner {
         };
         this.setKey();
         this.model = new THREE.Object3D;
+        this.camera = {
+            cameraBox: new THREE.Object3D,
+            pointerPosition: { x: 0, y: 0 }
+        }
     }
 
     /**
      * 初期化メソッド
      * 初期化時にモデルのロードを非同期で行っている（コンストラクタは非同期で行えないため）
      */
-    public static async init() {
+    public static async init(camera:THREE.Camera) {
         const cleaner = new Cleaner();
         // await cleaner.loadModel('roomba.glb');
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         cleaner.model = new THREE.Mesh(geometry, material);
+        cleaner.cameraControl(camera);
         return cleaner;
     }
 
@@ -125,7 +134,32 @@ class Cleaner {
             this.model.rotation.y -= this.rotationSpeed;
         }
     }
-}
 
+    cameraControl(camera: THREE.Camera) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        this.camera.cameraBox = new THREE.Mesh(geometry, material);
+        this.camera.cameraBox.attach(camera);
+
+        const pointerControl = (event: PointerEvent) => {
+            console.log("a");
+            const currentMousePosition = { x: event.clientX, y: event.clientY };
+            console.log(currentMousePosition);
+
+            // マウスポインターの移動量を計算
+            const deltaX = currentMousePosition.x - this.camera.pointerPosition.x;
+            const deltaY = currentMousePosition.y - this.camera.pointerPosition.y;
+
+            // マウスポインターの位置を更新
+            this.camera.pointerPosition = currentMousePosition;
+
+            // マウスの移動量に基づいてモデルを回転させる
+            const rotationSpeed = 0.01; // 回転速度を調整
+            this.camera.cameraBox.rotation.y += deltaX * rotationSpeed;
+            this.camera.cameraBox.rotation.x += deltaY * rotationSpeed; // x軸回転も追加（オプション）
+        }
+        document.addEventListener('pointermove', (e) => pointerControl(e), false);
+    }
+}
 export default Cleaner;
 
