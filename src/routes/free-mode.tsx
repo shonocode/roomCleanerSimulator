@@ -11,15 +11,26 @@ const FreeMode = () => {
     (async () => {
       const world = new World();
       const screen = screenRef.current;
-      screen?.appendChild(world.renderer.domElement);
+      const canvas = world.renderer.domElement;
+      screen?.appendChild(canvas);
 
-      world.camera.position.set(0,2,2);
+      // 仮実装
+      canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+      document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+
+      // キャンバスをクリックした際にポインタロックを要求
+      canvas.onclick = function () {
+        canvas.requestPointerLock();
+      };
+      // ------
+      
+      world.camera.position.set(0, 2, 2);
       world.camera.rotation.x = -0.3;
 
-      const map:Map = await Map.init();
+      const map: Map = await Map.init();
       world.scene.add(map.model);
 
-      const cleaner:Cleaner = await Cleaner.init(world.camera);
+      const cleaner: Cleaner = await Cleaner.init(world.camera);
       world.scene.add(cleaner.model);
       world.scene.add(cleaner.camera.cameraBox);
 

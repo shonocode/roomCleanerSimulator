@@ -42,7 +42,7 @@ class Cleaner {
      * 初期化メソッド
      * 初期化時にモデルのロードを非同期で行っている（コンストラクタは非同期で行えないため）
      */
-    public static async init(camera:THREE.Camera) {
+    public static async init(camera: THREE.Camera) {
         const cleaner = new Cleaner();
         // await cleaner.loadModel('roomba.glb');
         const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -142,22 +142,15 @@ class Cleaner {
         this.camera.cameraBox.attach(camera);
 
         const pointerControl = (event: PointerEvent) => {
-            console.log("a");
-            const currentMousePosition = { x: event.clientX, y: event.clientY };
-            console.log(currentMousePosition);
-
-            // マウスポインターの移動量を計算
-            const deltaX = currentMousePosition.x - this.camera.pointerPosition.x;
-            const deltaY = currentMousePosition.y - this.camera.pointerPosition.y;
-
-            // マウスポインターの位置を更新
-            this.camera.pointerPosition = currentMousePosition;
-
-            // マウスの移動量に基づいてモデルを回転させる
-            const rotationSpeed = 0.01; // 回転速度を調整
-            this.camera.cameraBox.rotation.y += deltaX * rotationSpeed;
-            this.camera.cameraBox.rotation.x += deltaY * rotationSpeed; // x軸回転も追加（オプション）
-        }
+            const rotationSpeed = 0.01;
+            const maxRotationX = Math.PI / 3; // 上向きに回転させないための制限
+            const cameraBoxEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+            cameraBoxEuler.setFromQuaternion(this.camera.cameraBox.quaternion);
+            cameraBoxEuler.y -= event.movementX * rotationSpeed;
+            cameraBoxEuler.x -= event.movementY * rotationSpeed;
+            cameraBoxEuler.x = Math.max(-maxRotationX, Math.min(maxRotationX, cameraBoxEuler.x ) );
+            this.camera.cameraBox.setRotationFromEuler(cameraBoxEuler)
+        };
         document.addEventListener('pointermove', (e) => pointerControl(e), false);
     }
 }
