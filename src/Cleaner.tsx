@@ -14,10 +14,7 @@ class Cleaner {
         right: boolean,
     };
     model: THREE.Object3D;
-    camera: {
-        cameraBox: THREE.Object3D,
-        pointerPosition: { x: number, y: number }
-    };
+    cameraBox: THREE.Object3D;
 
     constructor() {
         this.position = new THREE.Vector3(0, 0, 0);
@@ -32,23 +29,26 @@ class Cleaner {
         };
         this.setKey();
         this.model = new THREE.Object3D;
-        this.camera = {
-            cameraBox: new THREE.Object3D,
-            pointerPosition: { x: 0, y: 0 }
-        }
+        this.cameraBox = new THREE.Object3D;
     }
 
     /**
      * 初期化メソッド
      * 初期化時にモデルのロードを非同期で行っている（コンストラクタは非同期で行えないため）
      */
-    public static async init(camera: THREE.Camera) {
+    public static async init(scene: THREE.Scene, camera: THREE.Camera) {
         const cleaner = new Cleaner();
         // await cleaner.loadModel('roomba.glb');
+        // 仮モデル使用
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         cleaner.model = new THREE.Mesh(geometry, material);
-        cleaner.cameraControl(camera);
+        scene.add(cleaner.model);
+        cleaner.setCamera(camera);
+        scene.add(cleaner.cameraBox);
+        cleaner.model.attach(cleaner.cameraBox);
+        cleaner.cameraControl();
+
         return cleaner;
     }
 
@@ -135,24 +135,34 @@ class Cleaner {
         }
     }
 
-    cameraControl(camera: THREE.Camera) {
+    /**
+     * カメラをセット
+     * @param camera 
+     */
+    setCamera(camera: THREE.Camera) {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        this.camera.cameraBox = new THREE.Mesh(geometry, material);
-        this.camera.cameraBox.attach(camera);
+        this.cameraBox = new THREE.Mesh(geometry, material);
+        this.cameraBox.attach(camera);
+    }
 
+    /**
+     * カメラ制御
+     */
+    cameraControl() {
         const pointerControl = (event: PointerEvent) => {
             const rotationSpeed = 0.01;
             const maxRotationX = Math.PI / 3; // 上向きに回転させないための制限
             const cameraBoxEuler = new THREE.Euler(0, 0, 0, 'YXZ');
-            cameraBoxEuler.setFromQuaternion(this.camera.cameraBox.quaternion);
+            cameraBoxEuler.setFromQuaternion(this.cameraBox.quaternion);
             cameraBoxEuler.y -= event.movementX * rotationSpeed;
             cameraBoxEuler.x -= event.movementY * rotationSpeed;
-            cameraBoxEuler.x = Math.max(-maxRotationX, Math.min(maxRotationX, cameraBoxEuler.x ) );
-            this.camera.cameraBox.setRotationFromEuler(cameraBoxEuler)
+            cameraBoxEuler.x = Math.max(-maxRotationX, Math.min(maxRotationX, cameraBoxEuler.x));
+            this.cameraBox.setRotationFromEuler(cameraBoxEuler)
         };
         document.addEventListener('pointermove', (e) => pointerControl(e), false);
     }
 }
+
 export default Cleaner;
 
