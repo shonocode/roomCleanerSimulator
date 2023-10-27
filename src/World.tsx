@@ -40,7 +40,7 @@ class World {
     const floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0xcbcbcb, depthWrite: false } ) );
     floor.rotation.x = - Math.PI / 2;
     floor.receiveShadow = true;
-    this.scene.add( floor );
+    //this.scene.add( floor );
   }
 }
 

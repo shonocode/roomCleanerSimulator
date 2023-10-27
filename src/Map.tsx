@@ -17,7 +17,7 @@ class Map {
      */
     public static async init() {
         const map = new Map();
-        await map.loadModel('room.glb');
+        await map.loadModel('collision-world.glb');
         return map;
     }
 

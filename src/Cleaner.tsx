@@ -19,8 +19,8 @@ class Cleaner {
     constructor() {
         this.position = new THREE.Vector3(0, 0, 0);
         this.rotation = new THREE.Euler(0, 0, 0);
-        this.speed = 0.02;
-        this.rotationSpeed = 0.02;
+        this.speed = 0.1;
+        this.rotationSpeed = 0.01;
         this.keys = {
             forward: false,
             backward: false,
@@ -40,13 +40,15 @@ class Cleaner {
         const cleaner = new Cleaner();
         // await cleaner.loadModel('roomba.glb');
         // 仮モデル使用
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const geometry = new THREE.CylinderGeometry(3, 3, 1, 12);
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         cleaner.model = new THREE.Mesh(geometry, material);
+        cleaner.model.scale.setScalar(0.03);
         scene.add(cleaner.model);
         cleaner.setCamera(camera);
         scene.add(cleaner.cameraBox);
         cleaner.model.attach(cleaner.cameraBox);
+        cleaner.model.position.set(0, -0.2, -2);
         cleaner.cameraControl();
 
         return cleaner;
@@ -143,6 +145,8 @@ class Cleaner {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         this.cameraBox = new THREE.Mesh(geometry, material);
+        this.cameraBox.scale.setScalar(0.01);
+        camera.position.set(0, 0.3, 0.3);
         this.cameraBox.attach(camera);
     }
 
