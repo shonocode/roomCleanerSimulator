@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { Octree } from 'three/examples/jsm/math/Octree.js';
+import { OctreeHelper } from 'three/examples/jsm/helpers/OctreeHelper.js';
 
 class Map {
     position: THREE.Vector3;     // 初期位置
@@ -15,17 +17,33 @@ class Map {
      * 初期化メソッド
      * 初期化時にモデルのロードを非同期で行っている（コンストラクタは非同期で行えないため）
      */
-    public static async init() {
+    public static async init(scene: THREE.Scene, octree: Octree) {
         const map = new Map();
         await map.loadModel('collision-world.glb');
-        return map;
+        octree.fromGraphNode(map.model);
+        // map.model.traverse(child => {
+        //     if (child.isMesh) {
+        //         child.castShadow = true;
+        //         child.receiveShadow = true;
+        //         if (child.material.map) {
+        //             child.material.map.anisotropy = 4;
+        //         }
+        //     }
+        // });
+
+        // デバッグ用
+        // const helper = new OctreeHelper(octree);
+        // helper.visible = true;
+        // scene.add(helper);
+
+        scene.add(map.model)
     }
 
     /**
      * モデルのロードメソッド
      * DRACOLoaderで圧縮している
      */
-    async loadModel(path:string) {
+    async loadModel(path: string) {
         const loader = new GLTFLoader();
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('draco/');
