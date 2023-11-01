@@ -33,13 +33,7 @@ const FreeMode = () => {
       const STEPS_PER_FRAME = 5;
       const map: Map = await Map.init(world.scene, world.octree);
       const cleaner: Cleaner = await Cleaner.init(world.scene, world.camera);
-      const trash: Trash = new Trash(world.scene);
-
-      // const geometry = new THREE.BoxGeometry(1, 1, 1);
-      // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      // const cube = new THREE.Mesh(geometry, material);
-      // world.scene.add(cube);
-
+      const trash: Trash = new Trash(world.scene, map.mapBox, world.octree);
 
       const onWindowResize = () => {
         world.camera.aspect = window.innerWidth / window.innerHeight;

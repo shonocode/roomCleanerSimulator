@@ -3,7 +3,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { Capsule } from 'three/examples/jsm/math/Capsule.js';
 import { Octree } from 'three/examples/jsm/math/Octree.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 class Cleaner {
     velocity: THREE.Vector3;
@@ -56,9 +55,13 @@ class Cleaner {
         cleaner.setCamera(camera);
         scene.add(cleaner.cameraBox);
         cleaner.model.attach(cleaner.cameraBox);
-        cleaner.model.position.set(0, 1, 0.6);
         cleaner.cameraControl();
 
+        // 初期位置
+        // const cleanerPosition = new THREE.Vector3();
+        // cleanerPosition.copy(cleaner.collider.start).add(new THREE.Vector3(0, 100, 0))
+        // cleaner.model.position.copy(cleanerPosition);
+        // console.log(cleaner.model.position);
         return cleaner;
     }
 

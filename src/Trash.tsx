@@ -10,8 +10,8 @@ class Trash {
         velocity: THREE.Vector3
     }][];
 
-    constructor(scene) {
-        const NUM_SPHERES = 10;
+    constructor(scene: THREE.Scene, mapBox, worldOctree) {
+        const NUM_SPHERES = 100;
         const SPHERE_RADIUS = 0.05;
 
         const sphereGeometry = new THREE.IcosahedronGeometry(SPHERE_RADIUS, 5);
@@ -20,18 +20,27 @@ class Trash {
         this.trashes = [];
 
         for (let i = 0; i < NUM_SPHERES; i++) {
-
             const trash = new THREE.Mesh(sphereGeometry, sphereMaterial);
             // trash.castShadow = true;
             // trash.receiveShadow = true;
-            //sphere.position.set(0, -1, -i)
             scene.add(trash);
 
-            this.trashes.push({
-                mesh: trash,
-                collider: new THREE.Sphere(new THREE.Vector3(0, 0, i), SPHERE_RADIUS),
-                velocity: new THREE.Vector3()
-            });
+            const pos = new THREE.Vector3(
+                THREE.MathUtils.randFloat(mapBox.min.x, mapBox.max.x),
+                THREE.MathUtils.randFloat(mapBox.min.y, mapBox.max.y),
+                THREE.MathUtils.randFloat(mapBox.min.z, mapBox.max.z)
+            );
+
+            const trashCollider = new THREE.Sphere(pos, SPHERE_RADIUS);
+
+            const result = worldOctree.sphereIntersect(trashCollider);
+            if (!result) {
+                this.trashes.push({
+                    mesh: trash,
+                    collider: trashCollider,
+                    velocity: new THREE.Vector3()
+                });
+            }
         }
     }
 
